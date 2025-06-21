@@ -81,12 +81,12 @@
 <body>
     <div id="container">
         <div class="loading" id="loading">Loading Advanced Effects...</div>
-        
+
         <div class="info">
             Three.js Advanced Holographic Effects<br>
             GPU-accelerated shaders for professional results
         </div>
-        
+
         <div class="controls">
             <button class="effect-btn active" data-effect="original">Original</button>
             <button class="effect-btn" data-effect="holographic">Holographic</button>
@@ -135,7 +135,7 @@
                     uniform sampler2D uTexture;
                     uniform float uTime;
                     varying vec2 vUv;
-                    
+
                     vec3 rgb2hsv(vec3 c) {
                         vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
                         vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
@@ -144,33 +144,33 @@
                         float e = 1.0e-10;
                         return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
                     }
-                    
+
                     vec3 hsv2rgb(vec3 c) {
                         vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
                         vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
                         return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
                     }
-                    
+
                     void main() {
                         vec4 texColor = texture2D(uTexture, vUv);
-                        
+
                         // Create rainbow interference pattern
                         float wave1 = sin(vUv.x * 20.0 + uTime * 2.0) * 0.5 + 0.5;
                         float wave2 = sin(vUv.y * 15.0 + uTime * 1.5) * 0.5 + 0.5;
                         float interference = wave1 * wave2;
-                        
+
                         // Convert to HSV and shift hue
                         vec3 hsv = rgb2hsv(texColor.rgb);
                         hsv.x += interference * 0.5 + uTime * 0.1;
                         hsv.y *= 1.5 + interference * 0.5;
                         hsv.z *= 1.2 + interference * 0.3;
-                        
+
                         vec3 finalColor = hsv2rgb(hsv);
-                        
+
                         // Add holographic shimmer
                         float shimmer = sin(vUv.x * 50.0 + uTime * 3.0) * sin(vUv.y * 50.0 + uTime * 2.0);
                         finalColor += shimmer * 0.2;
-                        
+
                         gl_FragColor = vec4(finalColor, texColor.a);
                     }
                 `
@@ -180,14 +180,14 @@
                 vertexShader: `
                     varying vec2 vUv;
                     uniform float uTime;
-                    
+
                     float random(vec2 st) {
                         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
                     }
-                    
+
                     void main() {
                         vUv = uv;
-                        
+
                         // Add vertex displacement for corruption
                         vec3 newPosition = position;
                         float noise = random(uv + uTime * 0.1);
@@ -195,7 +195,7 @@
                             newPosition.x += (random(uv * 2.0) - 0.5) * 0.1;
                             newPosition.y += (random(uv * 3.0) - 0.5) * 0.1;
                         }
-                        
+
                         gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
                     }
                 `,
@@ -203,26 +203,26 @@
                     uniform sampler2D uTexture;
                     uniform float uTime;
                     varying vec2 vUv;
-                    
+
                     float random(vec2 st) {
                         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
                     }
-                    
+
                     void main() {
                         vec2 uv = vUv;
-                        
+
                         // Digital corruption effects
                         float glitchIntensity = step(0.98, random(vec2(floor(uTime * 10.0))));
-                        
+
                         if (glitchIntensity > 0.0) {
                             // RGB channel separation
                             float offset = random(vec2(uTime)) * 0.02;
                             vec4 r = texture2D(uTexture, uv + vec2(offset, 0.0));
                             vec4 g = texture2D(uTexture, uv);
                             vec4 b = texture2D(uTexture, uv - vec2(offset, 0.0));
-                            
+
                             gl_FragColor = vec4(r.r, g.g, b.b, g.a);
-                            
+
                             // Add digital noise
                             float noise = random(uv * 100.0 + uTime);
                             if (noise > 0.9) {
@@ -230,11 +230,11 @@
                             }
                         } else {
                             vec4 texColor = texture2D(uTexture, uv);
-                            
+
                             // Subtle scan lines
                             float scanline = sin(uv.y * 200.0 + uTime * 5.0) * 0.1;
                             texColor.rgb += scanline;
-                            
+
                             gl_FragColor = texColor;
                         }
                     }
@@ -247,12 +247,12 @@
                     varying vec3 vNormal;
                     varying vec3 vPosition;
                     uniform float uTime;
-                    
+
                     void main() {
                         vUv = uv;
                         vNormal = normalize(normalMatrix * normal);
                         vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
-                        
+
                         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                     }
                 `,
@@ -262,33 +262,33 @@
                     varying vec2 vUv;
                     varying vec3 vNormal;
                     varying vec3 vPosition;
-                    
+
                     void main() {
                         vec4 texColor = texture2D(uTexture, vUv);
-                        
+
                         // Create liquid metal flow
                         vec2 flowUv = vUv;
                         flowUv.x += sin(vUv.y * 10.0 + uTime * 2.0) * 0.02;
                         flowUv.y += cos(vUv.x * 8.0 + uTime * 1.5) * 0.02;
-                        
+
                         // Metallic reflection simulation
                         vec3 viewDir = normalize(-vPosition);
                         float fresnel = pow(1.0 - dot(vNormal, viewDir), 2.0);
-                        
+
                         // Liquid surface waves
                         float wave1 = sin(flowUv.x * 20.0 + uTime * 3.0) * 0.5 + 0.5;
                         float wave2 = cos(flowUv.y * 15.0 + uTime * 2.5) * 0.5 + 0.5;
                         float surface = wave1 * wave2;
-                        
+
                         // Metallic color shift
                         vec3 metalColor = texColor.rgb;
                         metalColor = mix(metalColor, vec3(0.8, 0.9, 1.0), surface * 0.5);
                         metalColor = mix(metalColor, vec3(1.0, 0.8, 0.6), fresnel * 0.3);
-                        
+
                         // Add metallic shine
                         float shine = pow(surface, 3.0);
                         metalColor += shine * 0.5;
-                        
+
                         gl_FragColor = vec4(metalColor, texColor.a);
                     }
                 `
@@ -306,28 +306,28 @@
                     uniform sampler2D uTexture;
                     uniform float uTime;
                     varying vec2 vUv;
-                    
+
                     void main() {
                         vec4 texColor = texture2D(uTexture, vUv);
-                        
+
                         // Plasma field generation
                         float plasma1 = sin(vUv.x * 10.0 + uTime * 2.0);
                         float plasma2 = sin(vUv.y * 8.0 + uTime * 1.5);
                         float plasma3 = sin((vUv.x + vUv.y) * 12.0 + uTime * 3.0);
                         float plasma4 = sin(sqrt((vUv.x - 0.5) * (vUv.x - 0.5) + (vUv.y - 0.5) * (vUv.y - 0.5)) * 20.0 + uTime * 2.5);
-                        
+
                         float plasma = (plasma1 + plasma2 + plasma3 + plasma4) * 0.25;
-                        
+
                         // Convert plasma to energy colors
                         vec3 plasmaColor;
                         plasmaColor.r = sin(plasma * 3.14159 + uTime) * 0.5 + 0.5;
                         plasmaColor.g = sin(plasma * 3.14159 + uTime + 2.0) * 0.5 + 0.5;
                         plasmaColor.b = sin(plasma * 3.14159 + uTime + 4.0) * 0.5 + 0.5;
-                        
+
                         // Blend with original image
                         vec3 finalColor = mix(texColor.rgb, plasmaColor, 0.6);
                         finalColor += plasmaColor * 0.4; // Add energy glow
-                        
+
                         gl_FragColor = vec4(finalColor, texColor.a);
                     }
                 `
@@ -337,15 +337,15 @@
                 vertexShader: `
                     varying vec2 vUv;
                     uniform float uTime;
-                    
+
                     void main() {
                         vUv = uv;
-                        
+
                         // Quantum displacement
                         vec3 newPosition = position;
                         float flux = sin(uTime * 2.0 + position.x * 10.0) * sin(uTime * 1.5 + position.y * 8.0);
                         newPosition.z += flux * 0.02;
-                        
+
                         gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
                     }
                 `,
@@ -353,30 +353,30 @@
                     uniform sampler2D uTexture;
                     uniform float uTime;
                     varying vec2 vUv;
-                    
+
                     void main() {
                         // Multiple reality layers
                         vec2 uv1 = vUv + sin(uTime * 2.0) * 0.01;
                         vec2 uv2 = vUv + cos(uTime * 1.5) * 0.01;
                         vec2 uv3 = vUv + sin(uTime * 3.0) * 0.005;
-                        
+
                         vec4 layer1 = texture2D(uTexture, uv1);
                         vec4 layer2 = texture2D(uTexture, uv2);
                         vec4 layer3 = texture2D(uTexture, uv3);
-                        
+
                         // Quantum interference
                         float interference = sin(vUv.x * 30.0 + uTime * 5.0) * sin(vUv.y * 25.0 + uTime * 4.0);
-                        
+
                         // Probability wave
                         float probability = abs(sin(length(vUv - 0.5) * 15.0 + uTime * 3.0));
-                        
+
                         // Mix realities based on quantum state
                         vec3 finalColor = mix(layer1.rgb, layer2.rgb, probability * 0.5);
                         finalColor = mix(finalColor, layer3.rgb, interference * 0.3);
-                        
+
                         // Add quantum glow
                         finalColor += vec3(0.2, 0.4, 1.0) * probability * 0.3;
-                        
+
                         gl_FragColor = vec4(finalColor, layer1.a);
                     }
                 `
@@ -386,7 +386,7 @@
                 vertexShader: `
                     varying vec2 vUv;
                     uniform float uTime;
-                    
+
                     void main() {
                         vUv = uv;
                         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -396,37 +396,37 @@
                     uniform sampler2D uTexture;
                     uniform float uTime;
                     varying vec2 vUv;
-                    
+
                     float random(vec2 st) {
                         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
                     }
-                    
+
                     void main() {
                         vec4 texColor = texture2D(uTexture, vUv);
-                        
+
                         // Digital dissolution
                         float dissolution = sin(uTime * 2.0) * 0.5 + 0.5;
                         float noise = random(vUv * 50.0 + uTime * 0.1);
-                        
+
                         // Create void areas
                         float voidMask = step(dissolution * 0.8, noise);
-                        
+
                         // Digital grid overlay
                         float gridX = step(0.95, fract(vUv.x * 50.0));
                         float gridY = step(0.95, fract(vUv.y * 50.0));
                         float grid = max(gridX, gridY);
-                        
+
                         // Matrix-style effect
                         vec3 voidColor = vec3(0.0, 1.0, 0.2) * grid * voidMask;
-                        
+
                         // Blend original with void
                         vec3 finalColor = mix(voidColor, texColor.rgb, 1.0 - voidMask * 0.7);
-                        
+
                         // Add digital sparkles
                         if (random(vUv * 100.0 + uTime) > 0.995) {
                             finalColor += vec3(0.0, 1.0, 1.0);
                         }
-                        
+
                         gl_FragColor = vec4(finalColor, texColor.a * (1.0 - voidMask * 0.5));
                     }
                 `
