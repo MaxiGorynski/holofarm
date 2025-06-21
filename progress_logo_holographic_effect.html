@@ -10,6 +10,7 @@
             padding: 20px;
             background: #000;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -18,313 +19,348 @@
 
         .logo-container {
             position: relative;
-            width: 300px;
-            height: 400px;
-            background: #111;
-            border-radius: 8px;
+            display: inline-block;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            box-shadow: 0 20px 60px rgba(0,255,255,0.3);
+            margin-bottom: 30px;
         }
 
-        .base-image {
+        .main-image {
+            display: block;
+            max-width: 400px;
+            max-height: 500px;
+            width: auto;
+            height: auto;
+            transition: all 0.3s ease;
+        }
+
+        /* Holographic rainbow effect */
+        .holographic {
+            filter: 
+                hue-rotate(0deg) 
+                saturate(1.8) 
+                brightness(1.2) 
+                contrast(1.3);
+            animation: holographicShift 3s ease-in-out infinite;
+        }
+
+        /* Liquid chrome effect */
+        .liquid {
+            filter: 
+                saturate(2) 
+                brightness(1.4) 
+                contrast(1.5) 
+                hue-rotate(180deg);
+            animation: liquidPulse 2s ease-in-out infinite alternate;
+        }
+
+        /* Electric glow effect */
+        .electric {
+            filter: 
+                brightness(1.6) 
+                contrast(1.8) 
+                saturate(2.5);
+            box-shadow: 
+                0 0 20px rgba(0,255,255,0.8),
+                0 0 40px rgba(255,0,255,0.6),
+                0 0 60px rgba(255,255,0,0.4);
+            animation: electricPulse 1.5s ease-in-out infinite;
+        }
+
+        /* Neon scan effect */
+        .neon-scan {
+            position: relative;
+            filter: brightness(1.3) contrast(1.4);
+        }
+
+        .neon-scan::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.1;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                0deg,
+                transparent 0%,
+                rgba(0,255,255,0.1) 25%,
+                rgba(0,255,255,0.8) 50%,
+                rgba(0,255,255,0.1) 75%,
+                transparent 100%
+            );
+            animation: scanMove 2s linear infinite;
+            pointer-events: none;
         }
 
-        .effect-layer {
+        /* Prismatic effect */
+        .prismatic {
+            filter: 
+                brightness(1.4) 
+                contrast(1.6) 
+                saturate(2.2);
+            animation: prismaticShift 4s ease-in-out infinite;
+        }
+
+        /* Floating particles overlay */
+        .particles-overlay {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            -webkit-mask: url('girl_with_flag.png') center/cover no-repeat;
-            mask: url('girl_with_flag.png') center/cover no-repeat;
-        }
-
-        .holographic-gradient {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg,
-                #ff0080, #ff8c00, #ffd700, #00ff80, #0080ff, #8000ff, #ff0080);
-            background-size: 300% 300%;
-            animation: colorShift 4s ease-in-out infinite;
-            mix-blend-mode: screen;
-        }
-
-        .liquid-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(circle at 20% 80%, rgba(255,0,128,0.6) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0,255,128,0.6) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(128,0,255,0.6) 0%, transparent 50%);
-            animation: liquidMove 6s ease-in-out infinite;
-            filter: blur(1px);
-        }
-
-        .energy-particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
             overflow: hidden;
         }
 
         .particle {
             position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #fff;
+            width: 3px;
+            height: 3px;
+            background: rgba(255,255,255,0.8);
             border-radius: 50%;
-            animation: rise 3s linear infinite;
-            opacity: 0;
+            animation: floatUp 4s linear infinite;
             box-shadow: 0 0 6px currentColor;
         }
 
-        .particle:nth-child(odd) {
-            background: #00ffff;
-            animation-duration: 4s;
+        .particle:nth-child(odd) { 
+            background: rgba(0,255,255,0.9); 
+            animation-duration: 3s;
         }
-        .particle:nth-child(3n) {
-            background: #ff00ff;
+        .particle:nth-child(3n) { 
+            background: rgba(255,0,255,0.9); 
             animation-duration: 5s;
         }
-        .particle:nth-child(4n) {
-            background: #ffff00;
-            animation-duration: 3.5s;
-        }
 
-        .light-sweep {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 200%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                transparent,
-                rgba(255,255,255,0.3),
-                transparent);
-            animation: sweep 3s ease-in-out infinite;
-            transform: skewX(-20deg);
-        }
-
-        .digital-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(0,255,255,0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,255,255,0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            animation: gridPulse 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes colorShift {
-            0% {
-                background-position: 0% 50%;
-                filter: hue-rotate(0deg) saturate(1.5);
+        @keyframes holographicShift {
+            0% { 
+                filter: hue-rotate(0deg) saturate(1.8) brightness(1.2) contrast(1.3);
             }
-            50% {
-                background-position: 100% 50%;
-                filter: hue-rotate(180deg) saturate(2);
+            25% { 
+                filter: hue-rotate(90deg) saturate(2.2) brightness(1.4) contrast(1.5);
+            }
+            50% { 
+                filter: hue-rotate(180deg) saturate(2) brightness(1.6) contrast(1.4);
+            }
+            75% { 
+                filter: hue-rotate(270deg) saturate(1.9) brightness(1.3) contrast(1.6);
+            }
+            100% { 
+                filter: hue-rotate(360deg) saturate(1.8) brightness(1.2) contrast(1.3);
+            }
+        }
+
+        @keyframes liquidPulse {
+            0% {
+                filter: saturate(2) brightness(1.4) contrast(1.5) hue-rotate(180deg);
+                transform: scale(1);
             }
             100% {
-                background-position: 0% 50%;
-                filter: hue-rotate(360deg) saturate(1.5);
+                filter: saturate(3) brightness(1.8) contrast(2) hue-rotate(220deg);
+                transform: scale(1.02);
             }
         }
 
-        @keyframes liquidMove {
+        @keyframes electricPulse {
             0%, 100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 0.8;
+                filter: brightness(1.6) contrast(1.8) saturate(2.5);
+                box-shadow: 
+                    0 0 20px rgba(0,255,255,0.8),
+                    0 0 40px rgba(255,0,255,0.6),
+                    0 0 60px rgba(255,255,0,0.4);
+            }
+            50% {
+                filter: brightness(2) contrast(2.2) saturate(3);
+                box-shadow: 
+                    0 0 30px rgba(0,255,255,1),
+                    0 0 60px rgba(255,0,255,0.8),
+                    0 0 90px rgba(255,255,0,0.6);
+            }
+        }
+
+        @keyframes scanMove {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        @keyframes prismaticShift {
+            0% {
+                filter: brightness(1.4) contrast(1.6) saturate(2.2) hue-rotate(0deg);
             }
             33% {
-                transform: scale(1.1) rotate(120deg);
-                opacity: 0.6;
+                filter: brightness(1.6) contrast(1.8) saturate(2.5) hue-rotate(120deg);
             }
             66% {
-                transform: scale(0.9) rotate(240deg);
-                opacity: 0.9;
+                filter: brightness(1.5) contrast(1.7) saturate(2.3) hue-rotate(240deg);
+            }
+            100% {
+                filter: brightness(1.4) contrast(1.6) saturate(2.2) hue-rotate(360deg);
             }
         }
 
-        @keyframes rise {
+        @keyframes floatUp {
             0% {
-                transform: translateY(120vh) scale(0);
+                transform: translateY(120%) scale(0);
                 opacity: 0;
             }
             10% {
                 opacity: 1;
             }
-            80% {
+            90% {
                 opacity: 1;
             }
             100% {
-                transform: translateY(-20vh) scale(1);
+                transform: translateY(-20%) scale(1.2);
                 opacity: 0;
             }
         }
 
-        @keyframes sweep {
-            0% {
-                left: -100%;
-            }
-            100% {
-                left: 100%;
-            }
-        }
-
-        @keyframes gridPulse {
-            0% {
-                opacity: 0.2;
-            }
-            100% {
-                opacity: 0.6;
-            }
-        }
-
         .controls {
-            position: absolute;
-            bottom: -60px;
-            left: 50%;
-            transform: translateX(-50%);
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
+            max-width: 500px;
         }
 
-        .control-btn {
-            padding: 6px 12px;
-            background: rgba(0,255,255,0.2);
-            border: 1px solid rgba(0,255,255,0.5);
+        .effect-btn {
+            padding: 10px 16px;
+            background: rgba(0,255,255,0.1);
+            border: 2px solid rgba(0,255,255,0.3);
             color: #00ffff;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 13px;
+            font-weight: bold;
             transition: all 0.3s ease;
+            text-transform: uppercase;
         }
 
-        .control-btn:hover {
+        .effect-btn:hover {
+            background: rgba(0,255,255,0.2);
+            box-shadow: 0 0 15px rgba(0,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .effect-btn.active {
             background: rgba(0,255,255,0.4);
-            box-shadow: 0 0 10px rgba(0,255,255,0.3);
-        }
-
-        .control-btn.active {
-            background: rgba(0,255,255,0.6);
             color: #000;
-        }
-
-        .hidden {
-            display: none !important;
+            box-shadow: 0 0 20px rgba(0,255,255,0.7);
         }
 
         .info {
-            position: absolute;
-            top: -50px;
-            left: 0;
-            right: 0;
+            color: rgba(255,255,255,0.6);
             text-align: center;
-            color: rgba(255,255,255,0.7);
-            font-size: 12px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="logo-container">
-        <img src="girl_with_flag.png" class="base-image" alt="Original Image">
+        <img src="girl_with_flag.png" class="main-image" id="mainImage" alt="Political Movement Logo">
+        <div class="particles-overlay hidden" id="particlesOverlay"></div>
+    </div>
 
-        <div class="effect-layer">
-            <div class="holographic-gradient" id="holographicGradient"></div>
-            <div class="liquid-effect" id="liquidEffect"></div>
-            <div class="energy-particles" id="energyParticles"></div>
-            <div class="light-sweep" id="lightSweep"></div>
-            <div class="digital-grid" id="digitalGrid"></div>
-        </div>
+    <div class="controls">
+        <button class="effect-btn" data-effect="none">Original</button>
+        <button class="effect-btn" data-effect="holographic">Holographic</button>
+        <button class="effect-btn" data-effect="liquid">Liquid Chrome</button>
+        <button class="effect-btn" data-effect="electric">Electric Glow</button>
+        <button class="effect-btn" data-effect="neon-scan">Neon Scan</button>
+        <button class="effect-btn" data-effect="prismatic">Prismatic</button>
+        <button class="effect-btn" data-effect="particles">+ Particles</button>
+    </div>
 
-        <div class="info">
-            Holographic Political Movement Logo
-        </div>
-
-        <div class="controls">
-            <button class="control-btn active" data-effect="holographicGradient">Holographic</button>
-            <button class="control-btn active" data-effect="liquidEffect">Liquid</button>
-            <button class="control-btn active" data-effect="energyParticles">Particles</button>
-            <button class="control-btn active" data-effect="lightSweep">Light Sweep</button>
-            <button class="control-btn active" data-effect="digitalGrid">Grid</button>
-        </div>
+    <div class="info">
+        Click buttons to apply different holographic effects to your political movement logo
     </div>
 
     <script>
-        // Generate energy particles
-        function createEnergyParticles() {
-            const container = document.getElementById('energyParticles');
-            const particleCount = 40;
+        const image = document.getElementById('mainImage');
+        const particlesOverlay = document.getElementById('particlesOverlay');
+        let currentEffect = 'none';
+        let particlesActive = false;
 
+        // Create floating particles
+        function createParticles() {
+            particlesOverlay.innerHTML = '';
+            const particleCount = 30;
+            
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(particle);
+                particle.style.animationDelay = Math.random() * 4 + 's';
+                particlesOverlay.appendChild(particle);
             }
         }
 
-        // Toggle effect visibility
-        function toggleEffect(effectId, button) {
-            const element = document.getElementById(effectId);
-            const isHidden = element.classList.contains('hidden');
+        // Apply effect to image
+        function applyEffect(effectName) {
+            // Remove all effect classes
+            image.className = 'main-image';
+            
+            // Add new effect class
+            if (effectName !== 'none') {
+                image.classList.add(effectName);
+            }
+            
+            currentEffect = effectName;
+            
+            // Update active button
+            document.querySelectorAll('.effect-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-effect') === effectName) {
+                    btn.classList.add('active');
+                }
+            });
+        }
 
-            if (isHidden) {
-                element.classList.remove('hidden');
-                button.classList.add('active');
+        // Toggle particles
+        function toggleParticles() {
+            particlesActive = !particlesActive;
+            const particlesBtn = document.querySelector('[data-effect="particles"]');
+            
+            if (particlesActive) {
+                particlesOverlay.classList.remove('hidden');
+                particlesBtn.classList.add('active');
+                createParticles();
             } else {
-                element.classList.add('hidden');
-                button.classList.remove('active');
+                particlesOverlay.classList.add('hidden');
+                particlesBtn.classList.remove('active');
             }
         }
 
-        // Set up control buttons
-        document.querySelectorAll('.control-btn').forEach(button => {
+        // Set up button event listeners
+        document.querySelectorAll('.effect-btn').forEach(button => {
             button.addEventListener('click', () => {
-                const effectId = button.getAttribute('data-effect');
-                toggleEffect(effectId, button);
+                const effect = button.getAttribute('data-effect');
+                
+                if (effect === 'particles') {
+                    toggleParticles();
+                } else {
+                    applyEffect(effect);
+                }
             });
         });
 
-        // Initialize
-        createEnergyParticles();
-
-        // Dynamic color variations
-        setInterval(() => {
-            const gradient = document.getElementById('holographicGradient');
-            if (!gradient.classList.contains('hidden')) {
-                const hue = Math.random() * 60;
-                gradient.style.filter = `hue-rotate(${hue}deg) saturate(${1.5 + Math.random() * 0.5})`;
-            }
-        }, 3000);
-
-        // Error handling for image loading
-        const img = document.querySelector('.base-image');
-        img.onerror = function() {
-            console.log('Image not found. Place your image file named "girl_with_flag.png" in the same folder as this HTML file.');
-            this.style.display = 'none';
+        // Handle image loading errors
+        image.onerror = function() {
+            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDxicj48dHNwYW4geD0iNTAlIiBkeT0iMS4yZW0iIGZvbnQtc2l6ZT0iMTQiPlBsYWNlICJnaXJsLWZsYWcuanBnIiBpbjwvdHNwYW4+PHRzcGFuIHg9IjUwJSIgZHk9IjEuMmVtIiBmb250LXNpemU9IjE0Ij50aGUgc2FtZSBmb2xkZXI8L3RzcGFuPjwvdGV4dD48L3N2Zz4=';
+            console.log('Place your image file named "girl_with_flag.png" in the same folder as this HTML file.');
         };
+
+        // Initialize with original effect
+        applyEffect('none');
     </script>
 </body>
 </html>
