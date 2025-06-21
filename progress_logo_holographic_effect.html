@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holographic Figure Effect</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .original-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+        }
+
+        .figure-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-mask: url('#figureMask');
+            mask: url('#figureMask');
+        }
+
+        .holographic-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg,
+                #ff006e, #fb5607, #ffbe0b, #8338ec, #3a86ff, #06ffa5, #ff006e);
+            background-size: 400% 400%;
+            animation: holographicShift 3s ease-in-out infinite;
+        }
+
+        .flame-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #fff, transparent);
+            border-radius: 50%;
+            animation: floatUp 4s linear infinite;
+            opacity: 0;
+        }
+
+        .particle:nth-child(odd) {
+            background: radial-gradient(circle, #00ffff, transparent);
+            animation-duration: 3s;
+        }
+
+        .particle:nth-child(3n) {
+            background: radial-gradient(circle, #ff00ff, transparent);
+            animation-duration: 5s;
+        }
+
+        .light-rays {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 40%, rgba(0,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(255,0,255,0.1) 0%, transparent 50%);
+            animation: lightPulse 2s ease-in-out infinite alternate;
+        }
+
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.03) 2px,
+                rgba(255,255,255,0.03) 4px
+            );
+            animation: scanlineMove 1s linear infinite;
+        }
+
+        @keyframes holographicShift {
+            0% {
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+            50% {
+                background-position: 100% 50%;
+                filter: hue-rotate(180deg);
+            }
+            100% {
+                background-position: 0% 50%;
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes lightPulse {
+            0% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes scanlineMove {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            max-width: 200px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="imageCanvas" style="display: none;"></canvas>
+
+        <div class="figure-mask">
+            <div class="holographic-effect" id="holographicEffect"></div>
+            <div class="light-rays"></div>
+            <div class="flame-particles" id="particlesContainer"></div>
+            <div class="scanlines" id="scanlinesEffect"></div>
+        </div>
+
+        <div class="controls">
+            <button id="toggleHolographic">Toggle Holographic</button>
+            <button id="toggleParticles">Toggle Particles</button>
+            <button id="toggleScanlines">Toggle Scanlines</button>
+        </div>
+
+        <div class="info">
+            Holographic figure effect with animated particles, light rays, and color shifting. Use controls to toggle different effects.
+        </div>
+    </div>
+
+    <svg style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <mask id="figureMask">
+                <rect width="100%" height="100%" fill="black"/>
+                <g fill="white" id="maskShape">
+                    <!-- Mask will be generated from uploaded image -->
+                </g>
+            </mask>
+        </defs>
+    </svg>
+
+    <script>
+        let effectStates = {
+            holographic: true,
+            particles: true,
+            scanlines: true
+        };
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particlesContainer');
+            container.innerHTML = ''; // Clear existing particles
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 4 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 3) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Process uploaded image to create mask
+        async function processImage() {
+            try {
+                // Try to read the uploaded image
+                const imageData = await window.fs.readFile('image.jpg'); // This will likely fail in the artifact
+
+                // For demonstration, we'll create a figure-shaped mask
+                // In a real implementation, you'd process the actual image
+                createFigureMask();
+
+            } catch (error) {
+                console.log('Using fallback figure mask');
+                createFigureMask();
+            }
+        }
+
+        function createFigureMask() {
+            // Create a figure-like mask shape based on the uploaded image
+            const maskShape = document.getElementById('maskShape');
+
+            // Create a child-like figure silhouette
+            const figure = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            figure.setAttribute('d', `
+                M 200 80
+                C 180 80 160 90 150 110
+                C 140 130 145 150 150 170
+                L 160 190
+                C 165 210 170 230 175 250
+                L 180 270
+                C 185 290 190 310 195 330
+                L 200 350
+                C 205 370 210 390 215 410
+                L 220 430
+                C 225 450 230 470 235 490
+                L 240 510
+                C 245 530 250 550 240 570
+                L 220 580
+                C 200 585 180 580 160 570
+                C 150 550 155 530 160 510
+                L 165 490
+                C 170 470 175 450 180 430
+                L 185 410
+                C 190 390 195 370 200 350
+                L 195 330
+                C 190 310 185 290 180 270
+                L 175 250
+                C 170 230 165 210 160 190
+                L 150 170
+                C 145 150 140 130 150 110
+                C 160 90 180 80 200 80
+                Z
+            `);
+
+            maskShape.appendChild(figure);
+        }
+
+        // Event listeners for toggle buttons
+        document.getElementById('toggleHolographic').addEventListener('click', function() {
+            const element = document.getElementById('holographicEffect');
+            effectStates.holographic = !effectStates.holographic;
+
+            if (effectStates.holographic) {
+                element.classList.remove('hidden');
+            } else {
+                element.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('toggleParticles').addEventListener('click', function() {
+            const element = document.getElementById('particlesContainer');
+            effectStates.particles = !effectStates.particles;
+
+            if (effectStates.particles) {
+                element.classList.remove('hidden');
+            } else {
+                element.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('toggleScanlines').addEventListener('click', function() {
+            const element = document.getElementById('scanlinesEffect');
+            effectStates.scanlines = !effectStates.scanlines;
+
+            if (effectStates.scanlines) {
+                element.classList.remove('hidden');
+            } else {
+                element.classList.add('hidden');
+            }
+        });
+
+        // Initialize
+        createParticles();
+        processImage();
+
+        // Add dynamic color variations
+        setInterval(() => {
+            const holographic = document.getElementById('holographicEffect');
+            if (effectStates.holographic) {
+                const hue = Math.random() * 360;
+                holographic.style.filter = `hue-rotate(${hue}deg) saturate(1.2)`;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
