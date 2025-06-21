@@ -512,44 +512,21 @@
         function createMesh() {
             console.log('Creating mesh with texture:', texture.image.width, 'x', texture.image.height);
 
-            // Get actual image dimensions
-            const imgWidth = texture.image.width;
-            const imgHeight = texture.image.height;
+            // Simple approach: fixed size with correct aspect ratio
+            const imageAspect = texture.image.width / texture.image.height;
 
-            // Scale down to fit screen nicely (max 60% of screen)
-            const maxScreenWidth = window.innerWidth * 0.6;
-            const maxScreenHeight = window.innerHeight * 0.6;
+            let width = 4;  // Base width
+            let height = 4 / imageAspect;  // Height based on aspect ratio
 
-            let finalWidth = imgWidth;
-            let finalHeight = imgHeight;
-
-            // Scale down if too big
-            if (finalWidth > maxScreenWidth) {
-                const scale = maxScreenWidth / finalWidth;
-                finalWidth = maxScreenWidth;
-                finalHeight = finalHeight * scale;
+            // If image is very tall, limit height instead
+            if (height > 6) {
+                height = 6;
+                width = 6 * imageAspect;
             }
 
-            if (finalHeight > maxScreenHeight) {
-                const scale = maxScreenHeight / finalHeight;
-                finalHeight = maxScreenHeight;
-                finalWidth = finalWidth * scale;
-            }
+            console.log('Using geometry size:', width, 'x', height);
 
-            console.log('Final display size:', finalWidth, 'x', finalHeight);
-
-            // Update camera to match actual pixel dimensions
-            const halfWidth = finalWidth / 2;
-            const halfHeight = finalHeight / 2;
-
-            camera.left = -halfWidth;
-            camera.right = halfWidth;
-            camera.top = halfHeight;
-            camera.bottom = -halfHeight;
-            camera.updateProjectionMatrix();
-
-            // Create geometry with actual size
-            const geometry = new THREE.PlaneGeometry(finalWidth, finalHeight);
+            const geometry = new THREE.PlaneGeometry(width, height);
 
             material = new THREE.ShaderMaterial({
                 uniforms: {
@@ -562,7 +539,10 @@
             });
 
             mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(0, 0, 0); // Ensure it's at origin
             scene.add(mesh);
+
+            console.log('Mesh created and added to scene');
 
             animate();
         }
@@ -600,15 +580,9 @@
 
         // Handle window resize
         window.addEventListener('resize', () => {
-            if (camera) {
-                const aspect = window.innerWidth / window.innerHeight;
-                camera.left = -aspect;
-                camera.right = aspect;
-                camera.top = 1;
-                camera.bottom = -1;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
         // Initialize
